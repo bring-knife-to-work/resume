@@ -68,10 +68,16 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         
-        .download-btn {
+        /* 操作按钮容器 */
+        .action-buttons {
             position: absolute;
             top: 30px;
             right: 40px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
@@ -82,9 +88,10 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s;
+            font-size: 14px;
         }
         
-        .download-btn:hover {
+        .btn:hover {
             background: rgba(255, 255, 255, 0.3);
         }
         
@@ -205,6 +212,119 @@
             text-decoration: underline;
         }
         
+        /* 打印样式优化 - 关键部分 */
+        @media print {
+            /* 隐藏代码雨背景 */
+            #codeRain {
+                display: none !important;
+            }
+            
+            /* 重置页面样式，适配打印 */
+            body {
+                background: white !important;
+                padding: 0 !important;
+                color: #000 !important;
+            }
+            
+            .resume-container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                background: white !important;
+                backdrop-filter: none !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+            
+            /* 隐藏操作按钮 */
+            .action-buttons {
+                display: none !important;
+            }
+            
+            /* 优化头部背景，避免打印时颜色过深 */
+            .header {
+                background: #1e3c72 !important;
+                color: white !important;
+                background-image: none !important;
+                padding: 20px 30px !important;
+            }
+            
+            .name-title {
+                text-shadow: none !important;
+                font-size: 28px !important;
+            }
+            
+            .tagline {
+                text-shadow: none !important;
+                font-size: 16px !important;
+            }
+            
+            /* 调整内容区域内边距 */
+            .content {
+                padding: 20px 30px !important;
+            }
+            
+            /* 优化链接样式，打印时显示完整URL */
+            .project-link {
+                color: #000 !important;
+                text-decoration: underline !important;
+            }
+            
+            .project-link:after {
+                content: " (" attr(href) ")";
+                font-size: 12px !important;
+                color: #666 !important;
+            }
+            
+            /* 优化列表项样式 */
+            .item-details li:before {
+                color: #000 !important;
+            }
+            
+            /* 优化边框和分隔线 */
+            .education-item, .experience-item, .project-item {
+                border-bottom: 1px solid #ccc !important;
+                page-break-inside: avoid !important; /* 避免项目被分页截断 */
+            }
+            
+            .section-title {
+                color: #000 !important;
+                border-bottom: 2px solid #ccc !important;
+            }
+            
+            .project-tech {
+                background: #f5f5f5 !important;
+                color: #000 !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            /* 调整字体大小，确保打印清晰 */
+            body, .info-value, .skills-list li, .item-details li, p {
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+            }
+            
+            .item-title {
+                font-size: 16px !important;
+            }
+            
+            .item-subtitle {
+                color: #333 !important;
+                font-size: 15px !important;
+            }
+            
+            /* 移除可能导致打印问题的样式 */
+            * {
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+            
+            /* 设置打印页面边距 */
+            @page {
+                margin: 1.5cm;
+                size: A4;
+            }
+        }
+        
         @media (max-width: 768px) {
             .header {
                 padding: 20px;
@@ -222,7 +342,7 @@
                 grid-template-columns: 1fr;
             }
             
-            .download-btn {
+            .action-buttons {
                 position: static;
                 margin-top: 15px;
                 justify-content: center;
@@ -242,6 +362,18 @@
         <div class="header">
             <div class="name-title">前端开发-万涛</div>
             <div class="tagline">前端开发，不止于"实现"，更在于"优化"！</div>
+            
+            <!-- 操作按钮：下载PDF + 打印 -->
+            <div class="action-buttons">
+                <!-- <button class="btn" id="downloadPdf">
+                    <i class="fas fa-download"></i>
+                    下载PDF版本
+                </button> -->
+                <button class="btn" id="printResume">
+                    <i class="fas fa-print"></i>
+                    打印简历
+                </button>
+            </div>
             
             <div class="basic-info">
                 <div class="info-item">
@@ -285,11 +417,6 @@
                     <div class="info-value">18708664988@163.com</div>
                 </div>
             </div>
-            
-            <!-- <button class="download-btn" id="downloadPdf">
-                <i class="fas fa-download"></i>
-                下载PDF版本
-            </button> -->
         </div>
         
         <div class="content">
@@ -548,21 +675,34 @@
             setInterval(draw, 35);
         })();
 
-        // 下载PDF功能（如果需要启用，取消按钮注释即可）
-        if (document.getElementById('downloadPdf')) {
-            document.getElementById('downloadPdf').addEventListener('click', function() {
-                const link = document.createElement('a');
-                link.href = '万涛的简历.pdf';
-                link.download = '万涛-前端开发工程师-简历.pdf';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                setTimeout(function() {
-                    alert('如果下载没有自动开始，请确保PDF文件"万涛的简历.pdf"与HTML文件在同一目录下。');
-                }, 1000);
-            });
-        }
+        // 下载PDF功能
+        document.getElementById('downloadPdf').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.href = '万涛的简历.pdf';
+            link.download = '万涛-前端开发工程师-简历.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            setTimeout(function() {
+                alert('如果下载没有自动开始，请确保PDF文件"万涛的简历.pdf"与HTML文件在同一目录下。');
+            }, 1000);
+        });
+
+        // 打印功能 - 核心实现
+        document.getElementById('printResume').addEventListener('click', function() {
+            // 打印前提示
+            if (confirm('即将开始打印简历，建议在打印设置中选择"A4纸张"和"纵向打印"以获得最佳效果。是否继续？')) {
+                // 触发浏览器打印功能
+                window.print();
+            }
+        });
+
+        // 打印完成后回调（可选）
+        window.addEventListener('afterprint', function() {
+            console.log('简历打印完成');
+            // 可在此添加打印后的提示或操作
+        });
     </script>
 </body>
 </html>
